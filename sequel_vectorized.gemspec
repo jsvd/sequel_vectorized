@@ -18,7 +18,7 @@ spec = Gem::Specification.new do |s|
   s.files = %w(
     lib/sequel_vectorized.rb
     README.rdoc
-    spec/sequel_vectorized.rb
+    spec/sequel_vectorized_spec.rb
     sequel_vectorized.gemspec
     ChangeLog)
 

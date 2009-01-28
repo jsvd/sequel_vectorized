@@ -1,30 +1,36 @@
 require 'narray'
 
-class Sequel::Dataset
-  def vectorize 
+module Sequel
+  module Plugins
+    module Vectorized
 
-    result = {}
+      class Sequel::Dataset
+        def vectorize 
 
-    # transform dataset to hash of arrays
-    map {|row| row.each{|att,value| (result[att] ||= []) << value}}
+          result = {}
 
-    # transform numeric and boolean arrays to narrays
-    result.each do |k,v|
+          # transform dataset to hash of arrays
+          map {|row| row.each{|att,value| (result[att] ||= []) << value}}
 
-      first = v.first
+          # transform numeric and boolean arrays to narrays
+          result.each do |k,v|
 
-      if first.kind_of?(Numeric) then
+            first = v.first
 
-        v[0] = first.to_f # so NArray is always of type float
-        result[k] = NArray.to_na v
+            if first.kind_of?(Numeric) then
 
-      elsif first == true || first == false then
+              v[0] = first.to_f # so NArray is always of type float
+              result[k] = NArray.to_na v
 
-        result[k] = NArray.float(v.size)
-        result[k][] = v.map {|i| (i == true) ? 1 : 0 }
+            elsif first == true || first == false then
 
+              result[k] = NArray.float(v.size)
+              result[k][] = v.map {|i| (i == true) ? 1 : 0 }
+
+            end
+          end
+        end
       end
     end
-    
   end
 end
