@@ -1,0 +1,28 @@
+== sequel_vectorized
+
+* Allows Sequel::Dataset to be exported as an Hash of Arrays and NArrays (http://narray.rubyforge.org)
+* Numeric and boolean columns are converted to NArrays. Others are kept as Arrays.
+* Aims for bulk numeric data processing
+
+== Example
+
+  TODO
+
+== Installation
+
+	gem install jsvd-sequel_vectorized
+
+== Features/Problems
+
+  * Conversions are currently limited to Numeric => Float, Boolean => byte
+  * TODO: optionally pass an Hash of :class => proc to vectorize.
+    *  Proc will transform an instance of :class to a NArray usable type (float, byte)
+
+== Synopsis
+
+
+== Copyright
+
+Author::    João Duarte <jsvduarte@gmail.com>
+Copyright:: Copyright (c) 2008 jsvd
+License::   
