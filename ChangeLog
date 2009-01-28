@@ -1,7 +1,11 @@
+== 0.0.3 / 2009-01-28
+
+* No longer has module Sequel::Plugins::Vectorized
+
 == 0.0.2 / 2009-01-28
 
 * Bit more plugin-ish.
- 
+
 == 0.0.1 / 2009-01-28
 
 * initial release
