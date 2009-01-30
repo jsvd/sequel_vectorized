@@ -34,12 +34,16 @@ class Sequel::Dataset
       result.instance_eval %Q{def #{col}; self[:#{col}]; end}
     end
 
-    axis ? _process(result, *axis.values) : result
+    axis ? _process(result, axis) : result
 
   end
 
   private
-  def _process data, axis_col, step, range, interpolate
+  def _process data, axis
+    axis_col = axis[:column]
+    step = axis[:step]
+    range = axis[:range]
+    interpolate = axis[:interpolate]
 
     new_size = (range.last - range.first)/step.to_f
     raw_axis = data[axis_col]

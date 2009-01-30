@@ -135,8 +135,5 @@ describe Sequel::Dataset do
     ret.should respond_to :ts
     ret.should respond_to :value
 
-    puts ret.ts.inspect
-    puts ret.value.inspect
-
   end
 end
