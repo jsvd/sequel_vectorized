@@ -117,4 +117,26 @@ describe Sequel::Dataset do
     ret[:ts].should == NArray.float(180).indgen(Time.local(2008,1,1,12).to_f,60)
 
   end
+
+
+  it "returns a vectorized result set that inherits from Hash and has dot notation" do
+
+    axis = {
+      :column => :ts,
+      :step => 60,
+      :range => [Time.local(2008,1,1,12).to_f, Time.local(2008,1,1,15).to_f],
+      :interpolate => false
+    }
+
+    ret = @events.vectorize :axis => axis
+
+    ret.should be_a_kind_of Hash
+
+    ret.should respond_to :ts
+    ret.should respond_to :value
+
+    puts ret.ts.inspect
+    puts ret.value.inspect
+
+  end
 end

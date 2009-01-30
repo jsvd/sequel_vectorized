@@ -29,6 +29,11 @@ class Sequel::Dataset
 
     end
 
+    # add dot notation
+    columns.each do |col|
+      result.instance_eval %Q{def #{col}; self[:#{col}]; end}
+    end
+
     axis ? _process(result, *axis.values) : result
 
   end
