@@ -1,4 +1,5 @@
 require 'narray'
+require 'gsl'
 
 class Sequel::Dataset
   def vectorize options={}
@@ -28,28 +29,35 @@ class Sequel::Dataset
 
     end
 
-    axis ? _process(result, axis) : result
+    axis ? _process(result, *axis.values) : result
 
   end
 
   private
-  def _process data, axis
-    column = axis[:column]
-    range = axis[:range]
-    step = axis[:step]
+  def _process data, axis_col, step, range, interpolate
 
-    data_places = data[column]/step.to_f - range.first/step.to_f
-    data[column] = NArray.float((range.last - range.first)/step.to_f).indgen!(range.first,60)
+    new_size = (range.last - range.first)/step.to_f
+    raw_axis = data[axis_col]
+
+    interp = GSL::Interp.alloc("linear", raw_axis.size) if interpolate
+
+    data[axis_col] = NArray.float(new_size).indgen!(range.first,step)
     
     data.each do |k,v|
-      next if k == column 
-      if v.kind_of? NArray and v[0].kind_of? Numeric then
-        data[k] = NArray.float((range.last - range.first)/step.to_f)
-        data[k][data_places] = v
+
+      next if k == axis_col 
+
+      # if first is a float, vector is a NArray and will be interpolated
+      if v[0].is_a? Float then
+        if interpolate
+          data[k] = interp.init(raw_axis, v).eval(raw_axis, v, data[axis_col])
+        else
+          data[k] = NArray.float(new_size)
+          data[k][(raw_axis - range.first)/step.to_f] = v
+        end
       end
     end
-
-    data
+    
   end
 
 end

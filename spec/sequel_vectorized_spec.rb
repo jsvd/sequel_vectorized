@@ -102,4 +102,19 @@ describe Sequel::Dataset do
     }
   end
 
+  it "interpolates NArrays if :axis option :interpolate is true" do
+    require 'lib/sequel_vectorized'
+    # TODO: not spec'ed
+    axis = {
+      :column => :ts,
+      :step => 60,
+      :range => [Time.local(2008,1,1,12).to_f, Time.local(2008,1,1,15).to_f],
+      :interpolate => true
+    }
+
+    ret = @events.vectorize :axis => axis
+
+    ret[:ts].should == NArray.float(180).indgen(Time.local(2008,1,1,12).to_f,60)
+
+  end
 end
