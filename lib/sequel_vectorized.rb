@@ -5,7 +5,7 @@ class Sequel::Dataset
   def vectorize options={}
 
     result = {}
-    axis = options[:axis]
+    axis = (options[:axis] ||= {})
 
     # transform dataset to hash of arrays
     map {|row| row.each{|att,value| (result[att] ||= []) << value}}
@@ -34,7 +34,9 @@ class Sequel::Dataset
       result.instance_eval %Q{def #{col}; self[:#{col}]; end}
     end
 
-    axis ? _process(result, axis) : result
+    return result if (axis.empty? || result.empty?)
+
+    _process(result, axis)
 
   end
 

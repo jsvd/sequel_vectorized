@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'spec'
 require 'sequel'
 
@@ -96,14 +97,15 @@ describe Sequel::Dataset do
 
     ret = @events.vectorize :axis => axis
 
-    ret.should == {
+    new_ret = ret.delete_if {|k,v| k.to_s.match(/__\w+/) }
+
+    new_ret.should == {
       :value => NArray.to_na([[0]*30, 2.2, [0]*59, 1.1, [0]*59,3.3, [0]*29].flatten),
       :ts => NArray.float(180).indgen(Time.local(2008,1,1,12).to_f,60)
     }
   end
 
   it "interpolates NArrays if :axis option :interpolate is true" do
-    require 'lib/sequel_vectorized'
     # TODO: not spec'ed
     axis = {
       :column => :ts,
@@ -135,5 +137,12 @@ describe Sequel::Dataset do
     ret.should respond_to :ts
     ret.should respond_to :value
 
+  end
+
+  it "should be empty if there is no data" do
+    require 'lib/sequel_vectorized'
+    @items.filter(:name => 'be').vectorize.should be_empty
+    @items.filter(:name => 'be').vectorize(:axis => {:column => :price, :range => [0, 100], :step => 20 }).should be_empty
+    @items.filter(:name => 'abc').vectorize(:axis => {:column => :price, :range => [0, 100], :step => 20 }).should_not be_empty
   end
 end
