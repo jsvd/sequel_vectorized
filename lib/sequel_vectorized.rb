@@ -8,7 +8,9 @@ class Sequel::Dataset
     axis = (options[:axis] ||= {})
 
     # transform dataset to hash of arrays
-    map {|row| row.each{|att,value| (result[att] ||= []) << value}}
+    dataset = filter(axis[:column] => axis[:range])
+
+    dataset.map {|row| row.each{|att,value| (result[att] ||= []) << value}}
 
     # transform numeric and boolean arrays to narrays
     result.each do |k,v|
@@ -34,9 +36,11 @@ class Sequel::Dataset
       result.instance_eval %Q{def #{col}; self[:#{col}]; end}
     end
 
-    return result if (axis.empty? || result.empty?)
-
-    _process(result, axis)
+    if (axis.empty? || result.empty?) then
+      result
+    else
+      _process(result, axis)
+    end
 
   end
 
@@ -48,6 +52,7 @@ class Sequel::Dataset
     interpolate = axis[:interpolate]
 
     new_size = (range.last - range.first)/step.to_f
+    new_size +=1 unless range.exclude_end?
     raw_axis = data[axis_col]
     data["__#{axis_col}".to_sym] = raw_axis
 

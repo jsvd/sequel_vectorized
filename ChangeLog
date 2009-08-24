@@ -1,3 +1,8 @@
+== 0.0.5 / 2009-06-04
+
+* Axis range is now a ruby Range
+* Proper creation of data vectors if end of range is excluded or not
+
 == 0.0.4 / 2009-06-04
 
 * Now returns empty hash if result set is empty even if axis is passed

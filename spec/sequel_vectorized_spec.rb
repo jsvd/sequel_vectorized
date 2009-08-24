@@ -77,7 +77,7 @@ describe Sequel::Dataset do
     axis = {
       :column => :ts,
       :step => 60,
-      :range => [Time.local(2008,1,1,12).to_f, Time.local(2008,1,1,15).to_f],
+      :range => Time.local(2008,1,1,12).to_f ... Time.local(2008,1,1,15).to_f,
       :interpolate => true
     }
 
@@ -91,7 +91,7 @@ describe Sequel::Dataset do
     axis = {
       :column => :ts,
       :step => 60,
-      :range => [Time.local(2008,1,1,12).to_f, Time.local(2008,1,1,15).to_f],
+      :range => Time.local(2008,1,1,12).to_f ... Time.local(2008,1,1,15).to_f,
       :interpolate => false
     }
 
@@ -110,7 +110,7 @@ describe Sequel::Dataset do
     axis = {
       :column => :ts,
       :step => 60,
-      :range => [Time.local(2008,1,1,12).to_f, Time.local(2008,1,1,15).to_f],
+      :range => Time.local(2008,1,1,12).to_f ... Time.local(2008,1,1,15).to_f,
       :interpolate => true
     }
 
@@ -126,7 +126,7 @@ describe Sequel::Dataset do
     axis = {
       :column => :ts,
       :step => 60,
-      :range => [Time.local(2008,1,1,12).to_f, Time.local(2008,1,1,15).to_f],
+      :range => Time.local(2008,1,1,12).to_f ... Time.local(2008,1,1,15).to_f,
       :interpolate => false
     }
 
@@ -140,9 +140,37 @@ describe Sequel::Dataset do
   end
 
   it "should be empty if there is no data" do
-    require 'lib/sequel_vectorized'
     @items.filter(:name => 'be').vectorize.should be_empty
-    @items.filter(:name => 'be').vectorize(:axis => {:column => :price, :range => [0, 100], :step => 20 }).should be_empty
-    @items.filter(:name => 'abc').vectorize(:axis => {:column => :price, :range => [0, 100], :step => 20 }).should_not be_empty
+    @items.filter(:name => 'be').vectorize(:axis => {:column => :price, :range => 0 ... 100, :step => 20 }).should be_empty
+    @items.filter(:name => 'abc').vectorize(:axis => {:column => :price, :range => 0 ... 100, :step => 20 }).should_not be_empty
+  end
+
+  it "should not raise error for an interval" do
+
+    require 'lib/sequel_vectorized'
+
+    @events << {:value => 2.2, :ts => Time.local(2009,8,14,21,0).to_f}
+    @events << {:value => 2.2, :ts => Time.local(2009,8,14,22,0).to_f}
+    @events << {:value => 1.1, :ts => Time.local(2009,8,14,23,20).to_f}
+    @events << {:value => 3.3, :ts => Time.local(2009,8,15,0).to_f}
+    @events << {:value => 3.3, :ts => Time.local(2009,8,15,1).to_f}
+
+    axis = {
+      :column => :ts,
+      :step => 60,
+      :range => Time.local(2009,8,14,22).to_f .. Time.local(2009,8,15,0).to_f,
+      :interpolate => false
+    }
+
+    lambda { @events.vectorize :axis => axis }.should_not raise_error
+    axis[:interpolate] = true
+    lambda { @events.vectorize :axis => axis }.should_not raise_error
+
+    axis[:range] = Time.local(2009,8,14,22).to_f .. Time.local(2009,8,15,0).to_f
+
+    lambda { @events.vectorize :axis => axis }.should_not raise_error
+    axis[:interpolate] = false
+    lambda { @events.vectorize :axis => axis }.should_not raise_error
+
   end
 end
