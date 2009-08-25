@@ -1,3 +1,7 @@
+== 0.1.0 / 2009-09-25
+
+* Prevent exception if trying to interpolate insufficient data
+
 == 0.0.6 / 2009-09-25
 
 * Prevent exception if trying to interpolate insufficient data
