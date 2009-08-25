@@ -1,4 +1,8 @@
-== 0.0.5 / 2009-06-04
+== 0.0.6 / 2009-09-25
+
+* Prevent exception if trying to interpolate insufficient data
+
+== 0.0.5 / 2009-09-24
 
 * Axis range is now a ruby Range
 * Proper creation of data vectors if end of range is excluded or not

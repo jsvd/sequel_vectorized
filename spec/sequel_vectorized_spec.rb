@@ -145,9 +145,24 @@ describe Sequel::Dataset do
     @items.filter(:name => 'abc').vectorize(:axis => {:column => :price, :range => 0 ... 100, :step => 20 }).should_not be_empty
   end
 
-  it "should not raise error for an interval" do
+  it "should not raise error if there's not enough data for interpolation" do
 
-    require 'lib/sequel_vectorized'
+    axis = {
+      :column => :ts,
+      :step => 60,
+      :range => Time.local(2008,1,1,12,30).to_f .. Time.local(2008,1,1,12,31).to_f,
+      :interpolate => true
+    }
+
+    lambda { @events.vectorize :axis => axis }.should_not raise_error
+    @events.vectorize(:axis => axis).should include :__value
+    @events.vectorize(:axis => axis).should include :__raw_mask
+    @events.vectorize(:axis => axis)[:__value].size.should == 1
+    @events.vectorize(:axis => axis)[:__raw_mask].size.should == 2
+
+  end
+
+  it "should not raise error for an interval" do
 
     @events << {:value => 2.2, :ts => Time.local(2009,8,14,21,0).to_f}
     @events << {:value => 2.2, :ts => Time.local(2009,8,14,22,0).to_f}

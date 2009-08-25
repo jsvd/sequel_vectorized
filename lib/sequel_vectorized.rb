@@ -53,7 +53,10 @@ class Sequel::Dataset
 
     new_size = (range.last - range.first)/step.to_f
     new_size +=1 unless range.exclude_end?
+
     raw_axis = data[axis_col]
+    interpolate = false if raw_axis.size <= 1 # turn off interpolation of insufficient data
+
     data["__#{axis_col}".to_sym] = raw_axis
 
     interp = GSL::Interp.alloc("linear", raw_axis.size) if interpolate
