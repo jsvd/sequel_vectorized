@@ -61,7 +61,7 @@ class Sequel::Dataset
 
     interp = GSL::Interp.alloc("linear", raw_axis.size) if interpolate
 
-    data[axis_col] = NArray.float(new_size).indgen!(range.first,step)
+    data[axis_col] = NArray.float(new_size).indgen!(range.first.to_f,step)
 
     data[:__raw_mask] = NArray.byte(new_size)
     data[:__raw_mask][(raw_axis - range.first)/step.to_f] = 1
